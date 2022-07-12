@@ -6,7 +6,8 @@ import java.util.Optional;
 public enum Command {
     REGISTER("register"), LOGIN("login"),
     CREATE_WS("create-workspace"), CONNECT_WP("connect-workspace"),
-    DISCONNECT("disconnect");
+    DISCONNECT("disconnect"), SEND_MSG("send-message"),
+    RECEIVE_MSG("receive-message"), GET_CHATS("get-chats");
 
     Command(String str) {
         this.str = str;

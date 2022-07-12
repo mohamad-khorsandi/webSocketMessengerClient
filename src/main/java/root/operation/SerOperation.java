@@ -1,6 +1,7 @@
 package root.operation;
 
 import root.utils.AutoFormatter;
+import root.utils.QueueScanner;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -22,5 +23,16 @@ abstract public class SerOperation extends Operation{
 
     {
         shouldClosed = true;
+    }
+
+    Scanner receive;
+
+    @Override
+    void closeIfNeeded() throws IOException {
+        if(!shouldClosed)
+            return;
+        receive.close();
+        send.close();
+        socket.close();
     }
 }

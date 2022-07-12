@@ -1,6 +1,7 @@
 package root;
 
 import root.utils.AutoFormatter;
+import root.utils.QueueScanner;
 
 import java.net.Socket;
 import java.util.Scanner;
@@ -17,6 +18,6 @@ public class Workspace {
     public String ip;
     public int port;
     public Socket socket;
-    public Scanner receive;
+    public QueueScanner receive;
     public AutoFormatter send;
 }

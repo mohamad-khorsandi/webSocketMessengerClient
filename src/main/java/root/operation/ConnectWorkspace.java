@@ -1,17 +1,20 @@
 package root.operation;
 
+import lombok.NoArgsConstructor;
 import root.utils.AutoFormatter;
 import root.Client;
 import root.Workspace;
+import root.utils.QueueScanner;
+
 import static root.utils.Utils.throwIfResIsNotOK;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ConnectWorkspace extends SerOperation {
-    protected ConnectWorkspace() throws IOException {
 
+public class ConnectWorkspace extends SerOperation {
+    public ConnectWorkspace() throws IOException {
     }
 
     @Override
@@ -34,9 +37,8 @@ public class ConnectWorkspace extends SerOperation {
         socket.close();
 
         ws.socket = new Socket(ws.ip, ws.port);
-        System.out.println(ws.socket.isClosed());
         ws.send = new AutoFormatter(ws.socket.getOutputStream());
-        ws.receive = new Scanner(ws.socket.getInputStream());
+        ws.receive = new QueueScanner(ws.socket.getInputStream());
         ws.send.format("connect %s", token);
         //7,8,9 ---------------------------
         String response = ws.receive.next();
@@ -48,6 +50,10 @@ public class ConnectWorkspace extends SerOperation {
             throwIfResIsNotOK(ws.receive);
 
         Client.curWorkspace = ws;
+        Client.executor.submit(() ->{
+            Client.receiveFromWorkspace();
+            return null;
+        });
         return null;
     }
 }

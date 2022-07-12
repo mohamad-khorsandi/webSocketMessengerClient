@@ -10,7 +10,6 @@ import java.util.concurrent.Callable;
 abstract public class Operation implements Callable<Object> {
 
     protected Command cmd;
-    protected Scanner receive;
     protected AutoFormatter send;
     protected Socket socket;
     protected boolean shouldClosed;
@@ -36,8 +35,19 @@ abstract public class Operation implements Callable<Object> {
 
             case DISCONNECT:
                 operation = new Disconnect();
-            break;
+                break;
 
+            case SEND_MSG:
+                operation = new SendMessage();
+                break;
+
+            case RECEIVE_MSG:
+                operation = new ReceiveMessage();
+                break;
+
+            case GET_CHATS:
+                operation = new GetChats();
+                break;
             default:
                 throw new Exception("there is no such a operation");
         }
@@ -56,11 +66,5 @@ abstract public class Operation implements Callable<Object> {
         return result;
     }
 
-    private void closeIfNeeded() throws IOException {
-        if(!shouldClosed)
-            return;
-        receive.close();
-        send.close();
-        socket.close();
-    }
+    abstract void closeIfNeeded() throws IOException;
 }
