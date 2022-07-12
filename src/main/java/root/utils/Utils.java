@@ -12,6 +12,6 @@ public class Utils {
     public static void throwIfResIsNotOK(QueueScanner receive) throws Exception{
         String response = receive.next();
         if (!response.equals("OK"))
-            throw new Exception();
+            throw new Exception(response + " " + receive.nextLine());
     }
 }

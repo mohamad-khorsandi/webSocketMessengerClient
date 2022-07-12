@@ -4,7 +4,6 @@ import root.utils.AutoFormatter;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Scanner;
 import java.util.concurrent.Callable;
 
 abstract public class Operation implements Callable<Object> {
@@ -47,6 +46,10 @@ abstract public class Operation implements Callable<Object> {
 
             case GET_CHATS:
                 operation = new GetChats();
+                break;
+
+            case GET_MESSAGES:
+                operation = new GetMessages();
                 break;
             default:
                 throw new Exception("there is no such a operation");
