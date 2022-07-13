@@ -1,6 +1,6 @@
 package root.operation;
 
-import root.utils.AutoFormatter;
+import root.utils.connections.NormalConnectionPack;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -9,8 +9,6 @@ import java.util.concurrent.Callable;
 abstract public class Operation implements Callable<Object> {
 
     protected Command cmd;
-    protected AutoFormatter send;
-    protected Socket socket;
     protected boolean shouldClosed;
 
     public static Operation newOperation(Command cmd) throws Exception {
@@ -60,14 +58,15 @@ abstract public class Operation implements Callable<Object> {
 
     abstract Object operate() throws Exception;
 
-    @Override
-    public Object call() throws Exception {
-        send.format(cmd.toString());
-        Object result = operate();
-        closeIfNeeded();
-        System.out.println(cmd + " was successful");
-        return result;
-    }
-
+//    @Override
+//    public Object call() throws Exception {
+//        con.format(cmd.toString());
+//        Object result = operate();
+//        closeIfNeeded();
+//        System.out.println(cmd + " was successful");
+//        return result;
+//    }
+@Override
+    abstract public Object call() throws Exception;
     abstract void closeIfNeeded() throws IOException;
 }

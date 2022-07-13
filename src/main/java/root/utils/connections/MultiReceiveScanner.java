@@ -1,6 +1,7 @@
-package root.utils;
+package root.utils.connections;
 
 import root.Client;
+import root.utils.Pair;
 
 import java.io.Closeable;
 import java.io.InputStream;
@@ -11,52 +12,52 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class QueueScanner implements Closeable, Callable<Void> {
-    public QueueScanner(InputStream inputStream) {
+public class MultiReceiveScanner implements Closeable, Callable<Void> {
+    public MultiReceiveScanner(InputStream inputStream) {
         receive = new Scanner(inputStream);
         Client.executor.submit(this);
     }
 
     private Scanner receive;
-    private LinkedList<Pair<Type, CompletableFuture<String>>> receivers = new LinkedList<>();
+    private LinkedList<Pair<String, CompletableFuture<String>>> labeledReceivers = new LinkedList<>();
 
-    private LinkedList<Pair<String, CompletableFuture<String>>> waiters = new LinkedList<>();
+    private LinkedList<Pair<Type, CompletableFuture<String>>> normalReceivers = new LinkedList<>();
 
-    Object Waiter = new Object();
+    private Object Waiter = new Object();
     public Void call() throws InterruptedException {
         while (true){
             String msg = receive.next();
-            Optional<Pair<String, CompletableFuture<String>>> optPair = waiters.stream().filter((pair -> pair.key.equals(msg))).findFirst();
+            Optional<Pair<String, CompletableFuture<String>>> optPair = labeledReceivers.stream().filter((pair -> pair.getKey().equals(msg))).findFirst();
 
             if (optPair.isPresent()){
-                optPair.get().val.complete(msg);
-                waiters.remove(optPair.get());
+                optPair.get().getVal().complete(msg);
+                labeledReceivers.remove(optPair.get());
                 continue;
             }
 
             synchronized (Waiter){
-                if (receivers.size() == 0)
+                if (normalReceivers.size() == 0)
                     Waiter.wait();
             }
 
-            Pair<Type, CompletableFuture<String>> curReceiver = receivers.removeLast();
+            Pair<Type, CompletableFuture<String>> curReceiver = normalReceivers.removeLast();
 
-            if (curReceiver.key.equals(Type.NEXT_LINE))
-                curReceiver.val.complete(msg + receive.nextLine());
+            if (curReceiver.getKey().equals(Type.NEXT_LINE))
+                curReceiver.getVal().complete(msg + receive.nextLine());
             else
-                curReceiver.val.complete(msg);
+                curReceiver.getVal().complete(msg);
         }
     }
 
     public String waitForNext(String msg) throws ExecutionException, InterruptedException {
         CompletableFuture<String> future = new CompletableFuture<>();
-        waiters.addFirst(new Pair<>(msg, future));
+        labeledReceivers.addFirst(new Pair<>(msg, future));
         return future.get();
     }
 
     public String next() throws ExecutionException, InterruptedException {
         CompletableFuture<String> future = new CompletableFuture<>();
-        receivers.addFirst(new Pair<>(Type.NEXT, future));
+        normalReceivers.addFirst(new Pair<>(Type.NEXT, future));
         synchronized (Waiter){
             Waiter.notify();
         }
@@ -69,7 +70,7 @@ public class QueueScanner implements Closeable, Callable<Void> {
 
     public String nextLine() throws ExecutionException, InterruptedException {
         CompletableFuture<String> future = new CompletableFuture<>();
-        receivers.addFirst(new Pair<>(Type.NEXT_LINE, future));
+        normalReceivers.addFirst(new Pair<>(Type.NEXT_LINE, future));
         synchronized (Waiter){
             Waiter.notify();
         }
@@ -80,10 +81,9 @@ public class QueueScanner implements Closeable, Callable<Void> {
     public void close() {
         receive.close();
     }
-
-
+    enum Type {
+        NEXT, NEXT_LINE;
+    }
 }
 
-enum Type {
-    NEXT, NEXT_LINE;
-}
+

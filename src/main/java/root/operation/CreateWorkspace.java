@@ -14,14 +14,12 @@ public class CreateWorkspace extends SerOperation{
     Object operate() throws Exception {
         //2 -------------------------
         String workspaceName = Client.sc.next();
-        new Login(socket, send, receive).operate();
-        send.format(workspaceName);
+        new Login(con).operate();
+        con.format(workspaceName);
         //5 -------------------------
-        String result = receive.next();
-        if (!result.equals("OK"))
-            throw new Exception(result);
-        String ip = receive.next();
-        int port = receive.nextInt();
+        con.throwIfResIsNotOK();
+        String ip = con.next();
+        int port = con.nextInt();
         return null;
     }
 }

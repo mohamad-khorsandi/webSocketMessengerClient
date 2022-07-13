@@ -14,10 +14,10 @@ public class SendMessage extends WsOperation{
         String receiver = Client.sc.next();
         Message msg = new Message(Client.sc.next(), Client.sc.nextLine());
         //2 -------------------------------
-        send.format(receiver + " " + msg.toJSON());
+        con.format(receiver + " " + msg.toJSON());
 
-        Utils.throwIfResIsNotOK(receive);
-        int seq = receive.nextInt();
+        con.throwIfResIsNotOK();
+        int seq = con.nextInt();
         return null;
     }
 

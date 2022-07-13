@@ -1,27 +1,30 @@
 package root.operation;
 
 import root.Client;
-import root.utils.QueueScanner;
+import root.utils.connections.MultiReceiveConnectionPack;
 
 import java.io.IOException;
 
 abstract public class WsOperation extends Operation{
     public WsOperation() {
-        this.socket = Client.curWorkspace.socket;
-        this.receive = Client.curWorkspace.receive;
-        this.send = Client.curWorkspace.send;
+        this.con = Client.curWorkspace.con;
         this.shouldClosed = false;
     }
 
-    QueueScanner receive;
-
+    MultiReceiveConnectionPack con;
     @Override
-    void closeIfNeeded() throws IOException {
+    public Object call() throws Exception {
+        con.format(cmd.toString());
+        Object result = operate();
+        closeIfNeeded();
+        System.out.println(cmd + " was successful");
+        return result;
+    }
+    @Override
+    void closeIfNeeded(){
         if(!shouldClosed)
             return;
-        receive.close();
-        send.close();
-        socket.close();
+        con.close();
     }
 
 }

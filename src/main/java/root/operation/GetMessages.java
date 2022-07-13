@@ -7,10 +7,10 @@ public class GetMessages extends WsOperation{
     @Override
     Object operate() throws Exception {
         //1 --------------------------------
-        send.format(Client.sc.next());
+        con.format(Client.sc.next());
         //1 --------------------------------
-        Utils.throwIfResIsNotOK(receive);
-        System.out.println(receive.nextLine());
+        con.throwIfResIsNotOK();
+        System.out.println(con.nextLine());
         return true;
     }
 }

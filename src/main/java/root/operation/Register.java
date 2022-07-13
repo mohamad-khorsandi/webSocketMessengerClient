@@ -9,9 +9,9 @@ public class Register extends SerOperation{
     @Override
     Object operate() throws Exception {
         //2 -------------------------
-        send.format("%s %s", Client.phone, Client.pass);
+        con.format("%s %s", Client.phone, Client.pass);
         //3 -------------------------
-        receive.next();//ok
+        con.throwIfResIsNotOK();
         return null;
     }
 }

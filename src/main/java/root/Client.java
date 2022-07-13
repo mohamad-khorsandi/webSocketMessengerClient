@@ -28,7 +28,7 @@ public class Client {
 
     public static void receiveFromWorkspace() throws Exception {
         while (true){
-            Command cmd = Command.type(curWorkspace.receive.waitForNext("receive-message"));
+            Command cmd = Command.type(curWorkspace.con.waitForNext("receive-message"));
             Operation.newOperation(cmd).call();
             //todo what if curWorkspace.receive changes?
         }

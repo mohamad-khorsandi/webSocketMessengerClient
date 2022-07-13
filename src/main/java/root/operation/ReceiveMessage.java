@@ -6,7 +6,7 @@ import java.util.concurrent.ExecutionException;
 public class ReceiveMessage extends WsOperation{
     @Override
     Object operate() throws ExecutionException, InterruptedException {
-        String message = receive.nextLine();
+        String message = con.nextLine();
         System.out.println(cmd + " " + message);
         return null;
     }

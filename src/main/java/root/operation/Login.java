@@ -1,26 +1,24 @@
 package root.operation;
 
 import root.Client;
-import root.utils.AutoFormatter;
+import root.utils.connections.NormalConnectionPack;
 
 import java.io.IOException;
-import java.net.Socket;
-import java.util.Scanner;
 
 public class Login extends SerOperation{
     protected Login() throws IOException {
         super();
     }
-    public Login(Socket socket, AutoFormatter send, Scanner receive) {
-        super(socket, send, receive);
+    public Login(NormalConnectionPack con) {
+        super(con);
     }
 
     @Override
     Object operate() throws Exception {
         //1 -------------------------
-        send.format("%s %s", Client.phone, Client.pass);
+        con.format("%s %s", Client.phone, Client.pass);
         //2 -------------------------
-        String result = receive.nextLine();
+        String result = con.nextLine();
         if (!result.equals("OK"))
             throw new Exception(result);
         return null;

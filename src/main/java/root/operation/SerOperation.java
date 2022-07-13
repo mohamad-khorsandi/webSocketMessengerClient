@@ -1,7 +1,7 @@
 package root.operation;
 
-import root.utils.AutoFormatter;
-import root.utils.QueueScanner;
+import root.utils.connections.ConnectionPack;
+import root.utils.connections.NormalConnectionPack;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -10,29 +10,30 @@ import java.util.Scanner;
 abstract public class SerOperation extends Operation{
 
     protected SerOperation() throws IOException {
-        this.socket = new Socket("localhost", 8000);
-        this.receive = new Scanner(socket.getInputStream());
-        this.send = new AutoFormatter(socket.getOutputStream());
-    }
-
-    protected SerOperation(Socket socket, AutoFormatter send, Scanner receive){
-        this.socket = socket;
-        this.send = send;
-        this.receive = receive;
-    }
-
-    {
         shouldClosed = true;
+        con = ConnectionPack.newNormConnectionPack("127.0.0.1", 8000);
     }
 
-    Scanner receive;
+    protected SerOperation(NormalConnectionPack con){
+        shouldClosed = true;
+        this.con = con;
+    }
+
+    protected NormalConnectionPack con;
 
     @Override
     void closeIfNeeded() throws IOException {
         if(!shouldClosed)
             return;
-        receive.close();
-        send.close();
-        socket.close();
+        con.close();
+    }
+
+    @Override
+    public Object call() throws Exception {
+        con.format(cmd.toString());
+        Object result = operate();
+        closeIfNeeded();
+        System.out.println(cmd + " was successful");
+        return result;
     }
 }

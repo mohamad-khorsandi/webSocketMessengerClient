@@ -1,17 +1,10 @@
 package root.operation;
 
-import lombok.NoArgsConstructor;
-import root.utils.AutoFormatter;
 import root.Client;
 import root.Workspace;
-import root.utils.QueueScanner;
-
-import static root.utils.Utils.throwIfResIsNotOK;
-
+import root.utils.connections.ConnectionPack;
+import root.utils.connections.MultiReceiveConnectionPack;
 import java.io.IOException;
-import java.net.Socket;
-import java.util.Scanner;
-
 
 public class ConnectWorkspace extends SerOperation {
     public ConnectWorkspace() throws IOException {
@@ -23,31 +16,27 @@ public class ConnectWorkspace extends SerOperation {
         Workspace ws = new Workspace();
         ws.name = Client.sc.next();
         //2 ---------------------------
-        new Login(socket, send, receive).operate();
-        send.format(ws.name);
+        new Login(con).operate();
+        con.format(ws.name);
         //3 ---------------------------
-        if (!receive.next().equals("OK"))
-            throw new Exception();
-        ws.ip = receive.next();
-        ws.port = receive.nextInt();
-        String token = receive.next();
+        con.throwIfResIsNotOK();
+        ws.ip = con.next();
+        ws.port = con.nextInt();
+        String token = con.next();
         //4 ---------------------------
-        send.close();
-        receive.close();
-        socket.close();
+        con.close();
 
-        ws.socket = new Socket(ws.ip, ws.port);
-        ws.send = new AutoFormatter(ws.socket.getOutputStream());
-        ws.receive = new QueueScanner(ws.socket.getInputStream());
-        ws.send.format("connect %s", token);
+        MultiReceiveConnectionPack wsCon = ConnectionPack.newMulRecConnectionPack(ws.ip, ws.port);
+        ws.con = wsCon;
+        ws.con.format("connect %s", token);
         //7,8,9 ---------------------------
-        String response = ws.receive.next();
+        String response = ws.con.next();
         if (response.equals("username?")){
             System.out.println("please input your username:");
-            ws.send.format(Client.sc.next());
-            throwIfResIsNotOK(ws.receive);
+            ws.con.format(Client.sc.next());
+            ws.con.throwIfResIsNotOK();
         } else
-            throwIfResIsNotOK(ws.receive);
+            ws.con.throwIfResIsNotOK();
 
         Client.curWorkspace = ws;
         Client.executor.submit(() ->{
