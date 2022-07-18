@@ -55,18 +55,16 @@ abstract public class Operation implements Callable<Object> {
         operation.cmd = cmd;
         return operation;
     }
+    @Override
+    public Object call() throws Exception {
+        this.sendCmd();
+        Object result = operate();
+        closeIfNeeded();
+        System.out.println(cmd + " was successful");
+        return result;
+    }
 
+    abstract protected void sendCmd();
     abstract Object operate() throws Exception;
-
-//    @Override
-//    public Object call() throws Exception {
-//        con.format(cmd.toString());
-//        Object result = operate();
-//        closeIfNeeded();
-//        System.out.println(cmd + " was successful");
-//        return result;
-//    }
-@Override
-    abstract public Object call() throws Exception;
     abstract void closeIfNeeded() throws IOException;
 }

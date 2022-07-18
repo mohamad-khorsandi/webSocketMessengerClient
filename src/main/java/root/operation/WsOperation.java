@@ -12,14 +12,7 @@ abstract public class WsOperation extends Operation{
     }
 
     MultiReceiveConnectionPack con;
-    @Override
-    public Object call() throws Exception {
-        con.format(cmd.toString());
-        Object result = operate();
-        closeIfNeeded();
-        System.out.println(cmd + " was successful");
-        return result;
-    }
+
     @Override
     void closeIfNeeded(){
         if(!shouldClosed)
@@ -27,4 +20,7 @@ abstract public class WsOperation extends Operation{
         con.close();
     }
 
+    public void sendCmd(){
+        con.format(cmd.toString());
+    }
 }

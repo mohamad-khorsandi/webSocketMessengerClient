@@ -26,8 +26,7 @@ public class ConnectWorkspace extends SerOperation {
         //4 ---------------------------
         con.close();
 
-        MultiReceiveConnectionPack wsCon = ConnectionPack.newMulRecConnectionPack(ws.ip, ws.port);
-        ws.con = wsCon;
+        ws.con = ConnectionPack.newMulRecConnectionPack(ws.ip, ws.port);
         ws.con.format("connect %s", token);
         //7,8,9 ---------------------------
         String response = ws.con.next();
@@ -39,10 +38,7 @@ public class ConnectWorkspace extends SerOperation {
             ws.con.throwIfResIsNotOK();
 
         Client.curWorkspace = ws;
-        Client.executor.submit(() ->{
-            Client.receiveFromWorkspace();
-            return null;
-        });
+        Client.executor.submit(Client::receiveMsgFromWorkspace);
         return null;
     }
 }

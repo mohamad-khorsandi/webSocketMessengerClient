@@ -1,7 +1,5 @@
 package root.operation;
 
-import root.utils.Utils;
-
 public class GetChats extends WsOperation{
     @Override
     Object operate() throws Exception{

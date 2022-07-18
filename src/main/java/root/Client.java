@@ -16,17 +16,18 @@ public class Client {
     public static void main(String[] args) throws Exception {
         pass = args[0];
         phone = args[1];
-        sendCommand();
+        operateClientCommands();
+        System.exit(0);
     }
 
-    static void sendCommand() throws Exception {
+    static void operateClientCommands() throws Exception {
         while (true){
             Command cmd = Command.type(sc.next());
             Operation.newOperation(cmd).call();
         }
     }
 
-    public static void receiveFromWorkspace() throws Exception {
+    public static Void receiveMsgFromWorkspace() throws Exception {
         while (true){
             Command cmd = Command.type(curWorkspace.con.waitForNext("receive-message"));
             Operation.newOperation(cmd).call();

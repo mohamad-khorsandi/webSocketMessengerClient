@@ -4,8 +4,6 @@ import root.Client;
 
 import java.io.IOException;
 
-import static root.operation.Command.LOGIN;
-
 public class CreateWorkspace extends SerOperation{
     public CreateWorkspace() throws IOException {
     }
