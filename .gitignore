@@ -2,5 +2,6 @@
 /Client.iml
 *.class
 *.xml
+!pom.xml
 *.html
 /src/test/
